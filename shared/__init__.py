@@ -1,0 +1,1 @@
+# Shared libraries for intelligent search system

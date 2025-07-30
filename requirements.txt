@@ -1,0 +1,50 @@
+# 공통 의존성
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# 데이터베이스
+sqlalchemy==2.0.23
+sqlite3
+
+# 한국어 처리
+konlpy==0.6.0
+sentence-transformers==2.2.2
+transformers==4.36.0
+torch==2.1.0
+
+# 벡터 데이터베이스
+chromadb==0.4.18
+faiss-cpu==1.7.4
+
+# 캐싱
+redis==5.0.1
+
+# 보안
+pyjwt==2.8.0
+cryptography==41.0.8
+passlib==1.7.4
+
+# 스케줄링
+apscheduler==3.10.4
+
+# 로깅 및 모니터링
+structlog==23.2.0
+
+# 테스트
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0
+httpx==0.25.2
+
+# 개발 도구
+black==23.11.0
+flake8==6.1.0
+mypy==1.7.1
+
+# 기타
+python-dotenv==1.0.0
+requests==2.31.0
+numpy==1.24.3
+pandas==2.1.4

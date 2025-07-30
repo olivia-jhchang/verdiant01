@@ -1,0 +1,162 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - API_GATEWAY_PORT=8000
+      - DATA_COLLECTION_URL=http://data-collection:8001
+      - DOCUMENT_PROCESSING_URL=http://document-processing:8002
+      - VECTOR_SERVICE_URL=http://vector-service:8003
+      - SEARCH_SERVICE_URL=http://search-service:8004
+      - EVALUATION_SERVICE_URL=http://evaluation-service:8005
+    depends_on:
+      - data-collection
+      - document-processing
+      - vector-service
+      - search-service
+      - evaluation-service
+    volumes:
+      - ./shared:/app/shared
+    networks:
+      - intelligent-search-network
+
+  # Data Collection Service
+  data-collection:
+    build: ./services/data-collection
+    ports:
+      - "8001:8001"
+    environment:
+      - DATA_COLLECTION_PORT=8001
+      - DB_DRIVER=sqlite
+      - DB_NAME=intelligent_search
+    volumes:
+      - ./shared:/app/shared
+      - ./data:/app/data
+    networks:
+      - intelligent-search-network
+
+  # Document Processing Service
+  document-processing:
+    build: ./services/document-processing
+    ports:
+      - "8002:8002"
+    environment:
+      - DOCUMENT_PROCESSING_PORT=8002
+      - CHUNK_MIN_SIZE=100
+      - CHUNK_MAX_SIZE=1000
+      - CHUNK_OVERLAP=50
+    volumes:
+      - ./shared:/app/shared
+    networks:
+      - intelligent-search-network
+
+  # Vector Service
+  vector-service:
+    build: ./services/vector-service
+    ports:
+      - "8003:8003"
+    environment:
+      - VECTOR_SERVICE_PORT=8003
+      - EMBEDDING_PRIMARY_MODEL=BAAI/bge-base-ko-v1.5
+      - EMBEDDING_DEVICE=cpu
+      - EMBEDDING_BATCH_SIZE=32
+      - VECTOR_DB_HOST=chroma-db
+      - VECTOR_DB_PORT=8000
+    volumes:
+      - ./shared:/app/shared
+      - ./models:/app/models
+    depends_on:
+      - chroma-db
+    networks:
+      - intelligent-search-network
+
+  # Search Service
+  search-service:
+    build: ./services/search-service
+    ports:
+      - "8004:8004"
+    environment:
+      - SEARCH_SERVICE_PORT=8004
+      - VECTOR_DB_HOST=chroma-db
+      - VECTOR_DB_PORT=8000
+      - LLM_MODEL_NAME=microsoft/DialoGPT-medium
+      - LLM_DEVICE=cpu
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    volumes:
+      - ./shared:/app/shared
+      - ./models:/app/models
+    depends_on:
+      - chroma-db
+      - redis
+    networks:
+      - intelligent-search-network
+
+  # Evaluation Service
+  evaluation-service:
+    build: ./services/evaluation-service
+    ports:
+      - "8005:8005"
+    environment:
+      - EVALUATION_SERVICE_PORT=8005
+      - VECTOR_DB_HOST=chroma-db
+      - VECTOR_DB_PORT=8000
+    volumes:
+      - ./shared:/app/shared
+      - ./test_data:/app/test_data
+    depends_on:
+      - chroma-db
+    networks:
+      - intelligent-search-network
+
+  # Scheduler Service
+  scheduler-service:
+    build: ./services/scheduler-service
+    ports:
+      - "8006:8006"
+    environment:
+      - SCHEDULER_SERVICE_PORT=8006
+      - DATA_COLLECTION_URL=http://data-collection:8001
+      - EVALUATION_SERVICE_URL=http://evaluation-service:8005
+    volumes:
+      - ./shared:/app/shared
+    depends_on:
+      - data-collection
+      - evaluation-service
+    networks:
+      - intelligent-search-network
+
+  # ChromaDB
+  chroma-db:
+    image: chromadb/chroma:latest
+    ports:
+      - "8100:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+    environment:
+      - CHROMA_SERVER_HOST=0.0.0.0
+      - CHROMA_SERVER_HTTP_PORT=8000
+    networks:
+      - intelligent-search-network
+
+  # Redis
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - intelligent-search-network
+
+volumes:
+  chroma_data:
+  redis_data:
+
+networks:
+  intelligent-search-network:
+    driver: bridge

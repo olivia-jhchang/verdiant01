@@ -1,0 +1,27 @@
+# FastAPI 및 웹 프레임워크
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# 머신러닝 및 벡터 처리
+sentence-transformers==2.2.2
+transformers==4.36.0
+torch==2.1.0
+numpy==1.24.3
+
+# 벡터 데이터베이스
+chromadb==0.4.18
+faiss-cpu==1.7.4
+
+# 비동기 처리
+asyncio
+
+# 로깅
+structlog==23.2.0
+
+# 환경 변수
+python-dotenv==1.0.0
+
+# 기타
+requests==2.31.0

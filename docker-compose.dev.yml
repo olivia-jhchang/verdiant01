@@ -1,0 +1,70 @@
+version: '3.8'
+
+# 개발용 오버라이드 설정
+services:
+  api-gateway:
+    volumes:
+      - ./services/api-gateway:/app
+      - ./shared:/app/shared
+    environment:
+      - PYTHONPATH=/app:/app/shared
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  data-collection:
+    volumes:
+      - ./services/data-collection:/app
+      - ./shared:/app/shared
+      - ./data:/app/data
+    environment:
+      - PYTHONPATH=/app:/app/shared
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
+
+  document-processing:
+    volumes:
+      - ./services/document-processing:/app
+      - ./shared:/app/shared
+    environment:
+      - PYTHONPATH=/app:/app/shared
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8002 --reload
+
+  vector-service:
+    volumes:
+      - ./services/vector-service:/app
+      - ./shared:/app/shared
+      - ./models:/app/models
+    environment:
+      - PYTHONPATH=/app:/app/shared
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8003 --reload
+
+  search-service:
+    volumes:
+      - ./services/search-service:/app
+      - ./shared:/app/shared
+      - ./models:/app/models
+    environment:
+      - PYTHONPATH=/app:/app/shared
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
+
+  evaluation-service:
+    volumes:
+      - ./services/evaluation-service:/app
+      - ./shared:/app/shared
+      - ./test_data:/app/test_data
+    environment:
+      - PYTHONPATH=/app:/app/shared
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8005 --reload
+
+  scheduler-service:
+    volumes:
+      - ./services/scheduler-service:/app
+      - ./shared:/app/shared
+    environment:
+      - PYTHONPATH=/app:/app/shared
+      - DEBUG=true
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8006 --reload

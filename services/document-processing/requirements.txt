@@ -1,0 +1,21 @@
+# FastAPI 및 웹 프레임워크
+fastapi==0.104.1
+uvicorn==0.24.0
+pydantic==2.5.0
+python-multipart==0.0.6
+
+# 한국어 처리
+konlpy==0.6.0
+
+# 비동기 처리
+asyncio
+
+# 로깅
+structlog==23.2.0
+
+# 환경 변수
+python-dotenv==1.0.0
+
+# 기타
+requests==2.31.0
+numpy==1.24.3
